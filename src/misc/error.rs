@@ -5,6 +5,8 @@
 use std::error::Error as StdError;
 use std::fmt;
 
+use serde_plain::Error;
+
 // Convenience Result type
 pub type AoCResult<T> = std::result::Result<T, AoCError>;
 
@@ -34,7 +36,8 @@ impl AoCError {
             source: Some(cause.into()),
         }
     }
-    pub fn from_option<T>(option: Option<T>) -> AoCResult<T> {
+    // TODO Add context
+    pub fn from_option<T>(option: Option<T>, _context: Option<String>) -> AoCResult<T> {
         if let Some(val) = option {
             Ok(val)
         } else {
@@ -88,6 +91,15 @@ impl From<std::num::ParseIntError> for AoCError {
 
 impl From<std::io::Error> for AoCError {
     fn from(error: std::io::Error) -> Self {
+        Self {
+            kind: ErrorKind::InputParse,
+            source: Some(error.into()),
+        }
+    }
+}
+
+impl From<serde_plain::Error> for AoCError {
+    fn from(error: Error) -> Self {
         Self {
             kind: ErrorKind::InputParse,
             source: Some(error.into()),

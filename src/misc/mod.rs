@@ -1,15 +1,16 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
+use anyhow::Context;
 use log::debug;
 
 use crate::misc::error::{AoCError, AoCResult};
 
 pub mod error;
 
-pub fn read_vec_ints(filename: String) -> error::AoCResult<Vec<usize>> {
-    debug!("Opening file {}",filename);
-    let file = File::open(filename)?;
+pub fn read_vec_ints(filename: String) -> anyhow::Result<Vec<usize>> {
+    debug!("Opening file {}", filename);
+    let file = File::open(filename.to_string()).context(format!("Failed to file {}", filename))?;
     let reader = BufReader::new(file);
     let mut data = Vec::new();
     for line in reader.lines() {
@@ -18,8 +19,9 @@ pub fn read_vec_ints(filename: String) -> error::AoCResult<Vec<usize>> {
     Ok(data)
 }
 
-pub fn read_vec_string(filename: String) -> error::AoCResult<Vec<String>> {
-    let file = File::open(filename)?;
+pub fn read_vec_string(filename: String) -> anyhow::Result<Vec<String>> {
+    debug!("Opening file {}", filename);
+    let file = File::open(filename.to_string()).context(format!("Failed to file {}", filename))?;
     let reader = BufReader::new(file);
     let mut data = Vec::new();
     for line in reader.lines() {
